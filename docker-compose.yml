@@ -1,0 +1,30 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.4
+    container_name: db
+    restart: always
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      # - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-data:/var/lib/postgresql/data
+      # - ./config/pg_hba.conf:/var/lib/postgresql/data/pgdata/pg_hba.conf
+    ports:
+      - 5432:5432
+
+  odoo:
+    image: daocloud.io/dfang/odoo-with-odoorpc:master
+    container_name: odoo
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./config/odoo.conf:/etc/odoo/odoo.conf
+      - ./config/bootstrap_odoo_db.py:/tmp/bootstrap_odoo_db.py
+      - ./addons:/mnt/extra-addons
+
+volumes:
+  odoo-data:
